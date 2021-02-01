@@ -1,0 +1,94 @@
+{% extends '/layouts/base.html.twig' %}
+
+{% block title %}Товары{% endblock %}
+{% block content %}
+    <br><br><br>
+    <div class="container">
+        <div class="form-group">
+            <a href="{{ add }}" class="btn btn-success">Добавить</a>
+        </div>
+        <br>
+        {% if product_added.message %}
+            <br>
+            <div class="alert alert-success">{{ product_added.message }}</div>
+            <br>
+        {% endif %}
+        {% if products %}
+        <h3>Список товаров</h3>
+        <br>
+        <form id="form-sort" class="row g-3">
+            <div class="col-auto">
+                <label for="">Сортировать по:</label>
+                <select name="order" class="form-select" aria-label="Default select example">
+                    <option {% if order == 'name' %} selected="selected" {% endif %} value="name">Названию</option>
+                    <option {% if order == 'date_added' %} selected="selected" {% endif %} value="date_added">Дате добавления</option>
+                    <option {% if order == 'author' %} selected="selected" {% endif %} value="author">Имени автора</option>
+                    <option {% if order == 'reviews' %} selected="selected" {% endif %} value="reviews">Количеству отзывов</option>
+                </select>
+            </div>
+            <div class="col-auto">
+                <label for="">Сортировать по:</label>
+                <select name="sort" class="form-select" aria-label="Default select example">
+                    <option {% if sort == 'desc' %} selected="selected" {% endif  %}  value="desc">По убыванию</option>
+                    <option {% if sort == 'asc' %} selected="selected" {% endif  %}  value="asc">По возрастанию</option>
+                </select>
+            </div>
+            <div class="col-auto">
+                <br>
+                <button type="submit" class="btn btn-primary">Сортировать</button>
+            </div>
+            <div class="col-auto">
+                <br>
+                <button id="form-sort-reset" type="button" class="btn btn-danger">Сброс</button>
+            </div>
+        </form>
+        <br><br>
+        <div class="card card-body">
+            <table class="table">
+                <thead>
+                <tr>
+                    <th scope="col">Изображение</th>
+                    <th scope="col">Название</th>
+                    <th scope="col">Дата добавления</th>
+                    <th scope="col">Добавил</th>
+                    <th scope="col">Отзывов</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for product in products %}
+                    <tr>
+                        <th><img src="{{ product.image }}" alt="{{ product.name }}"></th>
+                        <th><a href="{{ product.href }}">{{ product.name }}</a></th>
+                        <th>{{ product.date_added }}</th>
+                        <th>{{ product.author }}</th>
+                        <th>{{ product.review }}</th>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+            <div class="card card-body">
+                <p class="text-center">Нет товаров</p>
+            </div>
+        {% endif %}
+    </div>
+    <script>
+
+        document.addEventListener('DOMContentLoaded', () => {
+            $('#form-sort').on('submit', function (e) {
+                e.preventDefault();
+
+                const order = $(this).find('[name="order"]').val();
+                const sort = $(this).find('[name="sort"]').val();
+
+                window.location.href = '/?order='+order+'&sort='+sort;
+
+            });
+
+            $('#form-sort-reset').on('click', () =>  window.location.href = '/')
+        })
+
+    </script>
+
+{% endblock %}

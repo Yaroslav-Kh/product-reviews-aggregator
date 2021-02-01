@@ -1,0 +1,33 @@
+{% if reviews %}
+<div id="reviews" class="card mb-5">
+    <div class="card-body">
+        <h4 class="mb-5">Отзывы</h4>
+        <table id="table-reviews" class="table">
+            <thead>
+            <tr>
+                <th scope="col">Имя</th>
+                <th scope="col">Оценка</th>
+                <th scope="col">Комментарий</th>
+                <th scope="col">Дата добавления</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for review in reviews %}
+                <tr>
+                    <th>{{ review.username }}</th>
+                    <th>{{ review.rating }}</th>
+                    <th>{{ review.comment }}</th>
+                    <th>{{ review.date_added }}</th>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% else %}
+    <div id="reviews" class="card mb-5">
+        <div class="card-body">
+            <p class="text-center">Нет отзывов</p>
+        </div>
+    </div>
+{% endif %}

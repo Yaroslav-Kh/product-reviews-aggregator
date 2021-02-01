@@ -1,0 +1,33 @@
+{% extends '/layouts/base.html.twig' %}
+
+{% block title %}Просмотр {{ product.name }}{% endblock %}
+{% block content %}
+    <br><br><br>
+    <div class="container">
+        <div class="form-group mb-5">
+            <a href="{{ back }}" class="btn btn-success">Назад</a>
+        </div>
+        <div class="row">
+            <div class="col">
+                <div class="card">
+                    <div class="card-body">
+                        <input type="hidden" name="product_id" value="{{ product.id }}">
+                        <h1 class="mb-3">{{ product.name }}</h1>
+                        <h4 class="mb-5">Рейтинг: <span id="rating-count">{{ product.rating }}</span></h4>
+                        <img class="img-responsive" src="{{ product.image }}" alt="{{ product.name }}">
+                    </div>
+                </div>
+            </div>
+            <div class="col">
+                {% include '/reviews/review_form.html.twig' %}
+            </div>
+        </div>
+
+        <br><br>
+
+        {{ include('/reviews/review_list.html.twig' , { 'reviews' : reviews }) }}
+
+
+    </div>
+
+{% endblock %}

@@ -1,0 +1,53 @@
+{% extends '/layouts/base.html.twig' %}
+
+{% block title %}Новый{% endblock %}
+{% block content %}
+    <br><br><br>
+    <div class="container">
+        {% if product_exist.message %}
+            <div class="alert alert-danger">{{ product_exist.message }}</div>
+        {% endif %}
+        <br><br>
+        <div class="form-group">
+            <a href="{{ back }}" class="btn btn-success">Назад</a>
+        </div>
+        <br><br>
+        <h3>Новый товар</h3>
+        <br><br>
+        <div class="card card-body">
+            <form action="{{ action }}" method="post">
+                <div class="mb-3">
+                    <label for="name" class="form-label">Название товара<strong class="text-danger">*</strong></label>
+                    <input required="required" name="name" type="text" class="form-control" id="name" aria-describedby="emailHelp">
+                    {% if error_name %}
+                        <strong class="text-danger">{{ error_name.message }}</strong>
+                    {% endif %}
+                </div>
+                <div class="mb-3">
+                    <label for="image" class="form-label">Ссылка на фото<strong class="text-danger">*</strong></label>
+                    <input required="required" name="image" type="text" class="form-control" id="image" aria-describedby="emailHelp">
+                    {% if error_image %}
+                        <strong class="text-danger">{{ error_image.message }}</strong>
+                    {% endif %}
+                </div>
+                <div class="mb-3">
+                    <label for="price" class="form-label">Средняя цена<strong class="text-danger">*</strong></label>
+                    <input pattern="[0-9]{1,7}" required="required" name="price" type="text" class="form-control" id="price" aria-describedby="emailHelp">
+                    {% if error_price %}
+                        <strong class="text-danger">{{ error_price.message }}</strong>
+                    {% endif %}
+                </div>
+                <div class="mb-3">
+                    <label for="author" class="form-label">Имя добавившего товар<strong class="text-danger">*</strong></label>
+                    <input required="required" name="author" type="text" class="form-control" id="author" aria-describedby="emailHelp">
+                    {% if error_username %}
+                        <strong class="text-danger">{{ error_username.message }}</strong>
+                    {% endif %}
+                </div>
+                <button type="submit" class="btn btn-primary">Добавить</button>
+            </form>
+        </div>
+
+    </div>
+
+{% endblock %}

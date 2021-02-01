@@ -1,0 +1,144 @@
+<div class="card">
+    <div class="card-body">
+        <h4 class="mb-5">Оставить отзыв</h4>
+        <form id="form-review" method="post" class="mb-5">
+            <div class="mb-3">
+                <label for="name" class="form-label">Ваше имя<strong class="text-danger">*</strong></label><br>
+                <input required="required" name="username" type="text" class="form-control" id="name" placeholder="Минимальное количество символов - 2">
+            </div>
+            <div class="mb-3">
+                <label for="rating" class="form-label">Оценка<strong class="text-danger">*</strong></label>
+                <div class="row">
+                    <div class="col" style="display: flex; gap: 10px">
+                        {% for i in 1..10 %}
+                            <div class="form-check">
+                                <input value="{{ loop.index }}" {% if i == 5 %} checked {% endif %} class="form-check-input" type="radio" name="rating" id="radio-{{ i }}">
+                                <label class="form-check-label" for="radio-{{ i }}">
+                                    {{ i }}
+                                </label>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+            <div class="mb-3">
+                <label for="comment" class="form-label">Комментарий<strong class="text-danger">*</strong></label><br>
+                <textarea required="required" name="comment" class="form-control" id="comment" rows="6" placeholder="Минимальное количество символов - 10"></textarea>
+            </div>
+            <button type="submit" class="btn btn-primary">Оставить отзыв</button>
+        </form>
+    </div>
+</div>
+
+<script>
+
+    document.addEventListener('DOMContentLoaded', () => {
+
+        const createDate = () => {
+
+            let today = new Date();
+            let dd = String(today.getDate()).padStart(2, '0');
+            let mm = String(today.getMonth() + 1).padStart(2, '0');
+            let yyyy = today.getFullYear();
+            let hh = String(today.getHours() + 1).padStart(2, '0');
+            let mi = String(today.getMinutes() + 1).padStart(2, '0');
+            let ss = String(today.getSeconds() + 1).padStart(2, '0');
+
+            return yyyy + '-' + mm + '-' + dd + ' ' + hh + ':' + mi + ':' + ss;
+
+        }
+
+        const createTable = (json) => {
+            return `<h4 class="mb-5">Отзывы</h4>
+                            <table id="table-reviews" class="table">
+                                <thead>
+                                <tr>
+                                    <th scope="col">Имя</th>
+                                    <th scope="col">Оценка</th>
+                                    <th scope="col">Комментарий</th>
+                                    <th scope="col">Дата добавления</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr>
+                                    <th>${json['review'].username}</th>
+                                    <th>${Math.round(json['review'].rating)}</th>
+                                    <th>${json['review'].comment}</th>
+                                    <th>${createDate()}</th>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            `
+        }
+
+        $('#form-review').on('submit', function (e) {
+            e.preventDefault();
+
+            const username = $(this).find('input[name="username"]');
+            const comment  = $(this).find('textarea[name="comment"]');
+
+            ($(username).val().length < 2)
+                ? $(username).after('<span class="text-danger error">Минимальное количество символов - 2</span>')
+                : $(username).next().remove();
+
+            ($(comment).val().length < 10)
+                ? $(comment).after('<span class="text-danger error">Минимальное количество символов - 10</span>')
+                : $(comment).next().remove();
+
+            if ($('span.text-danger.error').length > 0) return false;
+
+            const data = {
+                product_id: $('input[name="product_id"]').val(),
+                username: $(this).find('input[name="username"]').val(),
+                rating: $(this).find('input[name="rating"]:checked').val(),
+                comment:  $(this).find('textarea[name="comment"]').val()
+            }
+
+            $.ajax({
+                url: '/api/review/add',
+                method: 'post',
+                dataType: 'json',
+                data: data,
+                success: function(json) {
+                    if (json['exist']) {
+                        $('#form-review').prepend(`<div class="alert alert-danger">${json['message']}</div>`);
+                        setTimeout(() => $('#form-review .alert').remove(), 1500);
+                    }
+
+                    if (json['success']) {
+                        $('#rating-count').html(json['rating'])
+                        $('#form-review').prepend(`<div class="alert alert-success">${json['message']}</div>`);
+
+                        if (!$('#table-reviews').length) {
+
+                            $('#reviews p').replaceWith(createTable(json));
+                        } else {
+
+                            $('#table-reviews').append(`<tr>
+                                                        <th>${json['review'].username}</th>
+                                                        <th>${Math.round(json['review'].rating)}</th>
+                                                        <th>${json['review'].comment}</th>
+                                                        <th>${createDate()}</th>
+                                                    </tr>`)
+                        }
+
+
+                        setTimeout(() => $('#form-review .alert').remove(), 1500);
+                    }
+
+                    if (json['error']) {
+                        $('#form-review').prepend(`<div class="alert alert-success">${json['message']}</div>`);
+                        setTimeout(() => $('#form-review .alert').remove(), 1500);
+                    }
+                },
+                error: function (error) {
+                    alert(error);
+                }
+            });
+
+
+        });
+    });
+
+
+</script>
